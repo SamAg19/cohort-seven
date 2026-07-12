@@ -104,7 +104,7 @@ With the gained insight into the protocol, the following weeks serve as a deep d
 | [Roheemah](https://github.com/AbolareRoheemah)       | [Update 3](https://hackmd.io/@rhorheeymarh/HJaGVJYQMe)           |        |        |                  |
 | [Sagar](https://www.github.com/SoarinSkySagar)       | [Update 3](https://hackmd.io/@SoarinSkySagar/r1ieE-u7Ml)         |        |        |                  |
 | [Sahil](https://github.com/Sahilgill24)              |                                                                  |        |        |                  |
-| [Sameer](https://github.com/SamAg19)                 |                                                                  |        |        |                  |
+| [Sameer](https://github.com/SamAg19)                 |                                                                  | [Update 3 & 4](https://hackmd.io/@samag19/Sk5HOI6Qfl)       |        |                  |
 | [Soham](https://github.com/zemse)                    | [Update 3](https://hackmd.io/@zemse/r1dqoWK7Gx)                  | [Update 4](https://hackmd.io/@zemse/HkNAYmZVzl)        |        |                  |
 | [Skas](https://www.github.com/Skanislav)             | [Update 3](https://skas.gwei.domains/epf/epf-week-3/)            |        |        |                  | 
 | [Steven](https://github.com/stevemilk)               | [Update 3](https://hackmd.io/@steven1/rk92llYQfe)                |        |        |                  |
