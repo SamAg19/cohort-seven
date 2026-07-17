@@ -1,6 +1,6 @@
 # REST-SSZ Engine API transport for Lighthouse
 
-Add the new REST + SSZ Engine API transport (`execution-apis#793`) to Lighthouse, alongside the existing JSON-RPC transport, shipping as the Glamsterdam Engine API.
+Add the new REST + SSZ Engine API transport (`execution-apis#793`) to Lighthouse, alongside the existing JSON-RPC transport
 
 ## Motivation
 
@@ -16,7 +16,7 @@ The Engine API is how a beacon node drives its execution client: importing block
 
 The work **adds** a second Engine API transport without removing anything. The JSON-RPC path stays fully operational, and both run on the same port. The REST-SSZ transport is **opt-in behind a command-line flag**, so operators who don't enable it see no change. When enabled, Lighthouse probes the execution client once and keeps that choice for the run.
 
-The transport choice stays **hidden inside the execution-layer crate**. The rest of the beacon node calls the same methods and gets the same results, unaware of which transport ran. Lighthouse's existing safety checks (recomputing the block hash, verifying blob commitments, and validating payload status) sit above the transport and are reused unchanged.
+The transport choice stays **hidden inside the execution-layer crate** in the Lighthouse codebase. The rest of the beacon node calls the same methods and gets the same results, unaware of which transport ran. Lighthouse's existing safety checks (recomputing the block hash, verifying blob commitments, and validating payload status) sit above the transport and are reused unchanged.
 
 The project also implements an endpoint that returns a block's execution witness together with its validation result, so stateless and zkVM verifiers get both in one round-trip.
 
@@ -54,13 +54,13 @@ The fellowship development period runs from **week 5 to week 21**.
 
 **Weeks 5–7: Transport wiring & robustness.** A seam dispatches each call to the right transport, choosing REST-SSZ or falling back to JSON-RPC from a one-time `/capabilities` probe on the first health check and then freezing that choice. Capability tracking moves from a bool struct to a `JsonRpc` / `Ssz` enum. The remaining robustness follows the spec: fork-choice updates are serialized, expired opaque payload ids are transparently re-requested and retried, and bodies are gated per fork so an unsupported fork errors out instead of silently falling back.
 
-**Weeks 8–9: Test apparatus & mock coverage.** Share the mock client's core between transports, add an SSZ handler and a `/capabilities` responder, and cover the new REST behaviors, SSZ types, transport selection, and a switch to run existing suites over REST. Existing JSON-RPC tests must still pass.
+**Weeks 8–9: Test apparatus & mock coverage.** Share the `MockExecutionLayer` core between transports, add an SSZ handler and a `/capabilities` responder, and cover the new REST behaviors, SSZ types, transport selection, and a switch to run existing suites over REST. Existing JSON-RPC tests must still pass.
 
 **Weeks 10–11: Integration testing.** Test end to end against real execution clients that implement REST-SSZ (Erigon, Nethermind, Ethrex) and resolve interoperability issues.
 
 **Weeks 12–13: Research & metrics.** Measure REST-SSZ against JSON-RPC on the devnets (wire size, parse and round-trip latency, and block-import throughput, especially for blob-heavy payloads), quantifying the improvement and flagging any regressions to fix.
 
-**Weeks 14–15: Glamsterdam follow-ups.** Track Lighthouse's Glamsterdam PRs that affect the Engine API (e.g. [`get_blobs_v4` #9438](https://github.com/sigp/lighthouse/pull/9438) and [custody columns #9547](https://github.com/sigp/lighthouse/pull/9547)). Rework the SSZ structures for [EIP-7688](https://eips.ethereum.org/EIPS/eip-7688) (forward-compatible progressive containers) once it moves from Considered for Inclusion (CFI) to Scheduled for Inclusion (SFI).
+**Weeks 14–15: Glamsterdam follow-ups.** Track Lighthouse's Glamsterdam PRs that affect the Engine API (e.g. [`get_blobs_v4` #9438](https://github.com/sigp/lighthouse/pull/9438) and [custody columns #9547](https://github.com/sigp/lighthouse/pull/9547)). Rework the SSZ structures for [EIP-7688](https://eips.ethereum.org/EIPS/eip-7688) (forward-compatible progressive containers) once it moves from CFI to SFI.
 
 **Weeks 16–17: Execution-witness endpoint.** Implement the REST-SSZ payload-with-witness endpoint in Lighthouse and test it against a supporting execution client.
 
