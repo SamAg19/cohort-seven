@@ -1,4 +1,4 @@
-# REST-SSZ Engine API transport for Lighthouse
+# REST-SSZ Engine API for Lighthouse
 
 Add the new REST + SSZ Engine API transport (`execution-apis#793`) to Lighthouse, alongside the existing JSON-RPC transport
 
