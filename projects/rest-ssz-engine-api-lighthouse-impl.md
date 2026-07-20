@@ -31,7 +31,8 @@ The transport comprises a REST-SSZ client, its SSZ data types, a seam that selec
 | `engine_newPayloadV{1..5}` | `POST /payloads` |
 | `engine_forkchoiceUpdatedV{1..4}` | `POST /forkchoice` |
 | `engine_getPayloadV{1..6}` | `GET /payloads/{id}` |
-| `engine_getPayloadBodies*` | `/bodies` |
+| `engine_getPayloadBodiesByHashV{1,2}` | `	POST /{fork}/bodies/hash` |
+| `engine_getPayloadBodiesByRangeV{1,2}` | `GET /{fork}/bodies?from=...&count=...` |
 | `engine_getBlobsV{1..4}` | `POST /blobs/v{1..4}` |
 | `engine_getClientVersionV1` | `GET /identity` |
 | `engine_exchangeCapabilities` | `GET /capabilities` |
