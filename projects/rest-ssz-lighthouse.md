@@ -50,7 +50,7 @@ The implementation will follow two specifications:
         │  Execution client                                    │
         └──────────────────────────────────────────────────────┘
 ```
-The `execution_layer` crate isolates the wire format at the bottom of the stack. `ExecutionLayer` (`lib.rs`) is the public interface and runs the local safety checks. It drives one `Engine` (`engines.rs`) for health and caching, which owns the single JSON-RPC transport client (`engine_api/http.rs`) where every call goes through the `rpc_request` chokepoint.
+The `execution_layer` crate isolates the wire format at the bottom of the stack. `ExecutionLayer` is the public interface and runs the local safety checks. It drives one `Engine` for health and caching, which owns the single JSON-RPC transport client where every call goes through the `rpc_request` chokepoint.
 
 ### The proposed Engine API implementation in Lighthouse
 
@@ -163,7 +163,7 @@ Stateless clients and zkVM provers need a block's execution witness, which today
 
 **Weeks 5–7: Transport wiring & robustness.** Wire the `EngineApi` seam that resolves the transport once from a `/capabilities` probe and then dispatches each call, and add the robustness the spec calls for: serialized forkchoice updates, recovery of expired payload ids, and per-fork gating on bodies.
 
-**Weeks 8–9: Test apparatus & mock coverage.** Teach the `MockExecutionLayer` pipeline to serve REST-SSZ and cover the new behaviors, keeping the existing JSON-RPC tests green.
+**Weeks 8–9: Test apparatus & mock coverage.** `MockExecutionLayer` pipeline to serve REST-SSZ and cover the new behaviors, keeping the existing JSON-RPC tests green.
 
 **Weeks 10–11: Integration testing.** Test end to end against real execution clients that implement REST-SSZ (Erigon, Nethermind, Ethrex) and resolve interoperability issues.
 
@@ -171,7 +171,7 @@ Stateless clients and zkVM provers need a block's execution witness, which today
 
 **Weeks 14–15: Glamsterdam follow-ups.** Track Lighthouse's Glamsterdam PRs that affect the Engine API (e.g. [`get_blobs_v4` #9438](https://github.com/sigp/lighthouse/pull/9438) and [custody columns #9547](https://github.com/sigp/lighthouse/pull/9547)), and rework the SSZ containers for [EIP-7688](https://eips.ethereum.org/EIPS/eip-7688) progressive containers.
 
-**Weeks 16–17: Execution-witness endpoint.** Implement the REST-SSZ payload-with-witness endpoint in Lighthouse and test it against a supporting execution client.
+**Weeks 16–17: Execution-witness endpoint.** Implement the REST-SSZ payload-with-witness endpoint in Lighthouse and test it against a supporting execution client. 
 
 **Weeks 18–20: Spec buffer.** Reserved time to absorb revisions to the still-evolving spec.
 
