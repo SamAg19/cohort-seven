@@ -42,7 +42,7 @@ The implementation will follow two specifications:
         └────────────────────────────┬──────────────────────────┘
                                      │ self.api
         ┌────────────────────────────▼──────────────────────────┐
-        │  JSON-RPC (http.rs + json_structures)                 │
+        │  JSON-RPC (http.rs + json_structures.rs)              │
         │  rpc_request chokepoint, JWT, version dispatch        │
         └────────────────────────────┬──────────────────────────┘
                                      │ JSON-RPC over HTTP
@@ -55,38 +55,38 @@ The `execution_layer` crate isolates the wire format at the bottom of the stack.
 ### The proposed Engine API implementation in Lighthouse
 
 ```
-      ┌────────────────────────────────────────────────────────────────┐
-      │ Other Lighthouse crates (beacon_chain)                         │
-      └────────────────────────────────┬───────────────────────────────┘
-                                       │ unchanged public interface
-      ┌────────────────────────────────────────────────────────────────┐
-      │ ExecutionLayer (lib.rs) + Engine (engines.rs)                  │
-      └────────────────────────────────┬───────────────────────────────┘
-                                       │ Engine.api
-      ┌────────────────────────────────────────────────────────────────┐
-      │ EngineApi seam (engine_api/transport.rs)    [new]              │
-      │ resolves transport once, then dispatches per call              │
-      └────────────────────────────────┬───────────────────────────────┘
-                                       │
-                        ┌──────────────▼─────────────┐
-                        │ REST-SSZ resolved          │
-                        │ in transport seam?         │
-                        └────────┬───────────┬───────┘
-                             yes │           │ no
-                     ┌───────────┘           └───────────┐
-                     │                                   │
-      ┌──────────────▼─────────────┐      ┌──────────────▼─────────────┐
-      │ REST-SSZ                   │      │ JSON-RPC                   │
-      │ (rest.rs + ssz_structures) │      │ (http.rs + json_structures)│
-      │ [new]                      │      │ [reused, unchanged]        │
-      │ SSZ body + fork header     │      │                            │
-      └──────────────┴─────────────┘      └──────────────┴─────────────┘
-                     └─────────────────┬─────────────────┘
-                                       │ JSON-RPC or REST-SSZ over HTTP
-                                       ▼
-      ┌────────────────────────────────────────────────────────────────┐
-      │ Execution client                                               │
-      └────────────────────────────────────────────────────────────────┘
+      ┌──────────────────────────────────────────────────────────────────────┐
+      │ Other Lighthouse crates (beacon_chain)                               │
+      └───────────────────────────────────┬──────────────────────────────────┘
+                                          │ unchanged public interface
+      ┌──────────────────────────────────────────────────────────────────────┐
+      │ ExecutionLayer (lib.rs) + Engine (engines.rs)                        │
+      └───────────────────────────────────┬──────────────────────────────────┘
+                                          │ Engine.api
+      ┌──────────────────────────────────────────────────────────────────────┐
+      │ EngineApi seam (engine_api/transport.rs)    [new]                    │
+      │ resolves transport once, then dispatches per call                    │
+      └───────────────────────────────────┬──────────────────────────────────┘
+                                          │
+                           ┌──────────────▼─────────────┐
+                           │ REST-SSZ resolved          │
+                           │ in transport seam?         │
+                           └────────┬───────────┬───────┘
+                                yes │           │ no
+                       ┌────────────┘           └────────────┐
+                       │                                     │
+      ┌────────────────▼───────────────┐    ┌────────────────▼───────────────┐
+      │ REST-SSZ                       │    │ JSON-RPC                       │
+      │ (rest.rs + ssz_structures.rs)  │    │ (http.rs + json_structures.rs) │
+      │ [new]                          │    │ [reused, unchanged]            │
+      │ SSZ body + fork header         │    │                                │
+      └────────────────┴───────────────┘    └────────────────┴───────────────┘
+                       └──────────────────┬──────────────────┘
+                                          │ JSON-RPC or REST-SSZ over HTTP
+                                          ▼
+      ┌──────────────────────────────────────────────────────────────────────┐
+      │ Execution client                                                     │
+      └──────────────────────────────────────────────────────────────────────┘
 ```
 
 Since everything above the transport is wire-format agnostic, REST-SSZ slots in as a new sibling client. The API transport client that is set in `Engine` will be a new seam named `EngineApi` in place of `HttpJsonRpc`. On the first healthy probe the seam resolves the transport once, preferring REST-SSZ and falling back to JSON-RPC when it is unavailable, and that choice stays frozen until the beacon node restarts. REST-SSZ sends SSZ bodies and selects the fork with an `Eth-Execution-Version` header.
@@ -95,11 +95,11 @@ Since everything above the transport is wire-format agnostic, REST-SSZ slots in 
 
 ### Design principles
 
-The work is additive and stays almost entirely within the `execution_layer` crate, with only small changes elsewhere. Three principles keep it that way:
+The work is additive and stays almost entirely within the `execution_layer` crate. Three principles keep it that way:
 
 1. REST-SSZ sits behind a command-line flag. With the flag off, Lighthouse uses JSON-RPC only and with the flag on, Lighthouse chooses the transport once at startup and keeps that choice for the run.
 2. The existing JSON-RPC path is not broken. REST-SSZ is added alongside it, so JSON-RPC keeps working exactly as before and remains the fallback when an execution client does not support REST-SSZ.
-3. The transport choice stays contained inside the `execution_layer` crate, so the rest of the beacon node calls the same public methods without knowing which transport served them. The existing safety checks sit above the transport and are reused unchanged.
+3. The transport choice stays contained inside the `execution_layer` crate, so the crates that consume it call the same public methods without knowing which transport served them. The existing safety checks sit above the transport and are reused unchanged.
 
 ### REST-SSZ Endpoints
 
