@@ -95,7 +95,7 @@ Since everything above the transport is wire-format agnostic, REST-SSZ slots in 
 
 ### Design principles
 
-The work is additive and stays invisible to the rest of the node. Three principles keep it that way:
+The work is additive and stays almost entirely within the `execution_layer` crate, with only small changes elsewhere. Three principles keep it that way:
 
 1. REST-SSZ sits behind a command-line flag. With the flag off, Lighthouse uses JSON-RPC only and with the flag on, Lighthouse chooses the transport once at startup and keeps that choice for the run.
 2. The existing JSON-RPC path is not broken. REST-SSZ is added alongside it, so JSON-RPC keeps working exactly as before and remains the fallback when an execution client does not support REST-SSZ.
