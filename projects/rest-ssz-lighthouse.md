@@ -10,9 +10,7 @@ The Engine API is the interface between the consensus layer and the execution la
 
 2. The consensus layer holds its data as SSZ, so each call serializes those objects into JSON text and the execution layer deserializes them back into binary on receipt. This repeated encoding and decoding consumes CPU on both sides during the most latency-sensitive moments of block processing.
 
-3. Packaging and parsing these inflated payloads adds measurable delay to block building and validation. In a slot-based network that delay can cause a block to propagate too late, be forked out by peers, and cost the proposer its reward.
-
-4. JSON is nested text with no fixed layout, so a client cannot seek directly to a field and must parse the message from the beginning. This prevents clients from streaming data straight out of their databases and degrades overall node performance.
+3. Packaging and parsing these inflated payloads eat into each slot's fixed window, and a block that lands too late is forked out and costs the proposer its reward.
 
 Put together, these inefficiencies force the node to spend additional bandwidth, CPU, and memory to move the same block data. This overhead adds latency to every slot and limits how far the transport can be optimized.
 
@@ -98,7 +96,7 @@ Since everything above the transport is wire-format agnostic, REST-SSZ slots in 
 The work is additive and stays almost entirely within the `execution_layer` crate. Three principles keep it that way:
 
 1. REST-SSZ sits behind a command-line flag. With the flag off, Lighthouse uses JSON-RPC only and with the flag on, Lighthouse chooses the transport once at startup and keeps that choice for the run.
-2. The existing JSON-RPC path is not broken. REST-SSZ is added alongside it, so JSON-RPC keeps working exactly as before and remains the fallback when an execution client does not support REST-SSZ.
+2. The existing JSON-RPC path remains unchanged. REST-SSZ is added alongside it, so JSON-RPC keeps working exactly as before and remains the fallback when an execution client does not support REST-SSZ.
 3. The transport choice stays contained inside the `execution_layer` crate, so the crates that consume it call the same public methods without knowing which transport served them. The existing safety checks sit above the transport and are reused unchanged.
 
 ### REST-SSZ Endpoints
